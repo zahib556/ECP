@@ -1,0 +1,16 @@
+target/
+.venv/
+__pycache__/
+*.pyd
+*.egg-info/
+dev_keys/
+
+# обновление ПО
+dev_keys/
+release/
+dist/
+build/
+*.staging/
+*.backup/
+*.broken/
+*.pdb

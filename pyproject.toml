@@ -1,0 +1,15 @@
+[build-system]
+requires = ["maturin>=1.5,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "ecp"
+version = "0.1.0"
+description = "Средство выработки и проверки ЭЦП (СТБ 34.101.45-2013)"
+requires-python = ">=3.9"
+dependencies = ["PySide6", "cryptography"]
+
+[tool.maturin]
+python-source = "python"
+module-name = "ecp._core"
+features = ["pyo3/extension-module"]

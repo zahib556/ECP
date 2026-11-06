@@ -1,0 +1,17 @@
+[package]
+name = "ecp-core"
+version = "0.1.0"
+edition = "2021"
+description = "Криптоядро средства выработки и проверки ЭЦП (СТБ 34.101.45-2013)"
+
+[lib]
+name = "_core"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.23", features = ["extension-module", "abi3-py39"] }
+belt-hash = "0.1"
+belt-block = "0.1"
+num-bigint = "0.4"
+bign256 = { version = "0.13", features = ["arithmetic", "dsa"] }
+rand_core = { version = "0.6", features = ["getrandom"] }
