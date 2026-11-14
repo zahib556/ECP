@@ -177,7 +177,9 @@ def test_signature_only_in_sig_file_is_accepted(world):
     assert world.updater.check(FileSource(path)).manifest.version == "1.3.0"
 
 
-def test_no_embedded_public_key_blocks_updates(world):
+def test_no_embedded_public_key_blocks_updates(world, monkeypatch):
+    from ecp.update import updater as updater_module
+    monkeypatch.setattr(updater_module, "UPDATE_PUBLIC_KEY_B64", "")   # как будто ключ не вшит
     updater = Updater(world.app, "1.2.0", None, os_name="windows", arch="x64")
     with pytest.raises(UpdateError, match="ключ проверки обновлений не задан"):
         updater.check(FileSource(build(world)))
