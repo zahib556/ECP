@@ -40,7 +40,7 @@ def encode(claims: Dict[str, Any], key: bytes) -> str:
 
 def decode(token: str, key: bytes, now: int, verify_exp: bool = True) -> Dict[str, Any]:
     """Проверяет подпись (алгоритм строго HS256) и срок. Возвращает claims."""
-    if not isinstance(token, str) or token.count(".") != 2 or len(token) > 4096:
+    if not isinstance(token, str) or not token.isascii() or token.count(".") != 2 or len(token) > 4096:
         raise TokenError("неверный формат токена")
     header_b64, payload_b64, signature = token.split(".")
     try:

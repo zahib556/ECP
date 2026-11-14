@@ -20,7 +20,7 @@ MAX_MANIFEST_BYTES = 64 * 1024
 MAX_PACKAGE_SIZE = 4 * 1024 ** 3
 OS_NAMES = ("windows", "linux", "macos")
 ARCHES = ("x64", "arm64", "x86")
-_SHA256 = re.compile(r"^[0-9a-f]{64}$")
+_SHA256 = re.compile(r"[0-9a-f]{64}")
 
 
 class ManifestError(EcpError):
@@ -107,7 +107,7 @@ def validate(obj: Dict[str, Any]) -> UpdateManifest:
     digest = _field(obj, "package_sha256", str)
     sbom = _field(obj, "sbom", dict)
     sbom_ref = SbomRef(str(sbom.get("format", "")), str(sbom.get("url", "")), str(sbom.get("sha256", "")))
-    if not _SHA256.match(digest) or not _SHA256.match(sbom_ref.sha256):
+    if not _SHA256.fullmatch(digest) or not _SHA256.fullmatch(sbom_ref.sha256):
         raise ManifestError("Ошибка: SHA-256 в манифесте должен быть 64 символа 0-9a-f")
     if not sbom_ref.format.startswith("CycloneDX-"):
         raise ManifestError("Ошибка: поддерживается только SBOM формата CycloneDX")
