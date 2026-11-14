@@ -1,0 +1,5 @@
+# Инструменты тестирования (ПЗ-6). Установка: pip install -r requirements-dev.txt
+# После установки замените диапазоны точными версиями из `pip freeze` (см. TESTING_REPORT.md, раздел 2).
+pytest>=8.3
+pytest-cov>=5.0
+hypothesis>=6.100

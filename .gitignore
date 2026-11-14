@@ -4,6 +4,7 @@ __pycache__/
 *.pyd
 *.egg-info/
 dev_keys/
+*.pdb
 
 # обновление ПО
 dev_keys/
@@ -13,4 +14,16 @@ build/
 *.staging/
 *.backup/
 *.broken/
-*.pdb
+
+# артефакты тестирования (ПЗ-6)
+.pytest_cache/
+.hypothesis/
+.coverage
+.coverage.*
+coverage/
+htmlcov/
+coverage.xml
+fuzz/crashes/
+crash-*
+hang-*
+*.pyc
