@@ -37,9 +37,9 @@ def verify_password(password: str, salt: str, stored: str) -> bool:
         if algorithm != ALGORITHM or int(count) < MIN_ITERATIONS:
             return False
         expected = hash_password(password, salt, int(count))
-    except (ValueError, TypeError):
+        return hmac.compare_digest(expected.encode("ascii"), stored.encode("ascii"))
+    except (ValueError, TypeError):  # UnicodeEncodeError - тоже ValueError
         return False
-    return hmac.compare_digest(expected.encode("ascii"), stored.encode("ascii"))
 
 
 def strength(password: str) -> Tuple[int, str]:

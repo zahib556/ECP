@@ -79,8 +79,11 @@ def utf8_string(text: str) -> bytes:
 
 
 def oid(dotted: str) -> bytes:
-    arcs = [int(x) for x in dotted.split(".")]
-    if len(arcs) < 2 or arcs[0] > 2 or (arcs[0] < 2 and arcs[1] > 39):
+    try:
+        arcs = [int(x) for x in dotted.split(".")]
+    except ValueError:
+        raise Asn1Error(f"неверный идентификатор объекта: {dotted}") from None
+    if len(arcs) < 2 or any(a < 0 for a in arcs) or arcs[0] > 2 or (arcs[0] < 2 and arcs[1] > 39):
         raise Asn1Error(f"неверный идентификатор объекта: {dotted}")
     values = [40 * arcs[0] + arcs[1]] + arcs[2:]
     out = bytearray()

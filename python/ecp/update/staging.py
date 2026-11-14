@@ -4,6 +4,7 @@ from __future__ import annotations
 import re
 import stat
 import zipfile
+import zlib
 from pathlib import Path, PurePosixPath
 from typing import Iterable
 
@@ -30,7 +31,19 @@ def _safe_name(name: str) -> PurePosixPath:
 
 
 def extract(package: Path, dest: Path, limit: int = MAX_TOTAL, skip: Iterable[str] = SKIP_NAMES) -> int:
-    """Распаковывает пакет в dest. Возвращает число файлов. dest должен не существовать или быть пустым."""
+    """Распаковывает пакет в dest. Возвращает число файлов. dest должен не существовать или быть пустым.
+
+    Любое повреждение архива (плохая CRC, неподдерживаемое сжатие, шифрование, ошибка распаковки)
+    сообщается как PackageError, а не случайным исключением библиотеки.
+    """
+    try:
+        return _extract(package, dest, limit, skip)
+    except (zipfile.BadZipFile, NotImplementedError, RuntimeError, zlib.error, EOFError,
+            UnicodeError, OverflowError, OSError) as e:
+        raise PackageError(f"Ошибка: пакет повреждён или не читается ({type(e).__name__}: {e})") from None
+
+
+def _extract(package: Path, dest: Path, limit: int, skip: Iterable[str]) -> int:
     skip_set = set(skip)
     try:
         zf = zipfile.ZipFile(package)

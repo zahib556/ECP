@@ -10,7 +10,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Optional
 
-_DEVICE_ID = re.compile(r"^[0-9a-f]{64}$")
+_DEVICE_ID = re.compile(r"[0-9a-f]{64}")
 
 
 @dataclass(frozen=True)
@@ -61,4 +61,4 @@ def current_device_id() -> str:
 
 
 def is_valid_device_id(value: Optional[str]) -> bool:
-    return isinstance(value, str) and bool(_DEVICE_ID.match(value))
+    return isinstance(value, str) and bool(_DEVICE_ID.fullmatch(value))

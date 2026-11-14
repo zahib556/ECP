@@ -42,7 +42,10 @@ def check(data: bytes, expected_sha256: str, app_version: str, fmt: str = "Cyclo
         raise SbomMismatch("Ошибка: SBOM не в формате CycloneDX")
     if fmt != f"CycloneDX-{bom.get('specVersion')}":
         raise SbomMismatch("Ошибка: версия формата SBOM не совпадает с манифестом")
-    meta = ((bom.get("metadata") or {}).get("component") or {}) if isinstance(bom.get("metadata"), dict) else {}
+    meta = bom.get("metadata")
+    meta = meta.get("component") if isinstance(meta, dict) else None
+    if not isinstance(meta, dict):
+        raise SbomMismatch("Ошибка: в SBOM нет описания приложения (metadata.component)")
     if meta.get("version") != app_version:
         raise SbomMismatch("Ошибка: версия приложения в SBOM не совпадает с версией обновления")
     components = bom.get("components")

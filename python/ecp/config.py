@@ -56,10 +56,11 @@ def parse_period(text: str) -> timedelta:
     if not m:
         raise ValueError("ожидается число с единицей d (дни) или h (часы), например 30d")
     count = int(m.group(1))
-    delta = timedelta(days=count) if m.group(2).lower() == "d" else timedelta(hours=count)
-    if count < 1 or delta > MAX_PERIOD:
+    in_days = m.group(2).lower() == "d"
+    # границу проверяем до создания timedelta: огромное число вызвало бы OverflowError
+    if count < 1 or count > (MAX_PERIOD.days if in_days else MAX_PERIOD.days * 24):
         raise ValueError("допустимый срок: от 1h до 3650d")
-    return delta
+    return timedelta(days=count) if in_days else timedelta(hours=count)
 
 
 def parse_size(text: str) -> int:
