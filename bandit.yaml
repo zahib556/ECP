@@ -1,0 +1,11 @@
+# Конфигурация Bandit (SAST для Python). Запуск: bandit -r python tools main.py -c bandit.yaml
+# Тесты и фаззинг не анализируем: assert и «опасные» входы там нужны по смыслу.
+exclude_dirs:
+  - tests
+  - fuzz
+  - .venv
+  - .venv-audit
+  - target
+  - build
+  - dist
+  - release

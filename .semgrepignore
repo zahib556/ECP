@@ -1,0 +1,10 @@
+# Semgrep: что не анализировать (синтаксис как у .gitignore)
+tests/
+fuzz/
+target/
+build/
+dist/
+release/
+.venv/
+.venv-audit/
+security-reports/
