@@ -217,7 +217,8 @@ class AuthService:
             raise self._fail(BAD_CREDENTIALS,
                              f"Неудачный вход «{login}»: неверный логин или пароль, device_id={self._short(device_id)}",
                              login)
-        assert user is not None
+        if user is None:  # unreachable: checked above; explicit check instead of assert
+            raise RuntimeError("internal error: user is None")
         if user.device_id is None:
             self._db.set_device(user.id, device_id)
             self._log(f"Устройство привязано к «{login}», device_id={self._short(device_id)}", action="modify", obj=login)
@@ -303,7 +304,8 @@ class AuthService:
             self._register_failure(login)
             raise self._fail("Ошибка: неверный логин, пароль или код сброса",
                              f"Неудачный сброс привязки устройства «{login}»", login, action="modify")
-        assert user is not None
+        if user is None:  # unreachable: checked above; explicit check instead of assert
+            raise RuntimeError("internal error: user is None")
         self._db.clear_attempts(login)
         self._db.set_device(user.id, None)
         self._db.delete_user_sessions(user.id)

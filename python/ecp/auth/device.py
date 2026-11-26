@@ -37,7 +37,7 @@ def read_machine_id() -> str:
                     return value
             except OSError:
                 continue
-    except Exception:  # noqa: BLE001 - отпечаток не должен ронять приложение
+    except Exception:  # noqa: BLE001 - отпечаток не должен ронять приложение  # nosec B110 - fingerprint must never crash the app
         pass
     return ""
 
