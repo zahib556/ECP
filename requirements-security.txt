@@ -1,0 +1,5 @@
+# Инструменты анализа безопасности (ПЗ-7). Установка: pip install -r requirements-security.txt
+# Semgrep на Windows нативно не работает: он запускается в GitHub Actions (или в WSL).
+# После установки замените диапазоны точными версиями из `pip freeze` (см. SECURITY_REPORT.md, раздел 2).
+bandit>=1.7
+pip-audit>=2.7

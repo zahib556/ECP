@@ -9,7 +9,7 @@ name = "_core"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.23", features = ["extension-module", "abi3-py39"] }
+pyo3 = { version = "0.29", features = ["extension-module", "abi3-py39"] }
 belt-hash = "0.1"
 belt-block = "0.1"
 num-bigint = "0.4"

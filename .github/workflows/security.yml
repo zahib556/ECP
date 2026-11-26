@@ -1,0 +1,106 @@
+name: security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sast:
+    name: SAST (Bandit + Semgrep)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Установка инструментов
+        run: pip install -r requirements-security.txt semgrep
+
+      - name: Bandit (отчёт JSON)
+        id: bandit
+        continue-on-error: true
+        run: bandit -r python tools main.py -c bandit.yaml -f json -o bandit.json
+
+      - name: Bandit (текстовый вывод для отчёта)
+        continue-on-error: true
+        run: bandit -r python tools main.py -c bandit.yaml | tee bandit.txt
+
+      - name: Semgrep
+        continue-on-error: true
+        run: |
+          semgrep scan --metrics=off \
+            --config p/python --config p/security-audit --config p/secrets \
+            --json --output semgrep.json python tools main.py
+          semgrep scan --metrics=off \
+            --config p/python --config p/security-audit --config p/secrets \
+            python tools main.py | tee semgrep.txt
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sast-reports
+          path: |
+            bandit.json
+            bandit.txt
+            semgrep.json
+            semgrep.txt
+
+      # Порог критичности (аналог --fail-on high): сборка падает только на High у Bandit.
+      - name: Порог критичности Bandit (High)
+        run: bandit -r python tools main.py -c bandit.yaml -lll
+
+  sca:
+    name: SCA (pip-audit + cargo-audit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Зависимости Python (прямые и транзитивные)
+        run: |
+          python -m venv rt
+          rt/bin/pip install PySide6 cryptography
+          rt/bin/pip freeze > requirements-runtime.txt
+          cat requirements-runtime.txt
+
+      - name: pip-audit
+        id: pip_audit
+        continue-on-error: true
+        run: |
+          pip install pip-audit
+          pip-audit -r requirements-runtime.txt --no-deps --disable-pip -f json -o pip-audit.json
+          pip-audit -r requirements-runtime.txt --no-deps --disable-pip | tee pip-audit.txt
+
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo-audit
+        id: cargo_audit
+        continue-on-error: true
+        run: |
+          cargo install cargo-audit --locked
+          test -f Cargo.lock || cargo generate-lockfile
+          cargo audit --json > cargo-audit.json
+          cargo audit | tee cargo-audit.txt
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sca-reports
+          path: |
+            requirements-runtime.txt
+            pip-audit.json
+            pip-audit.txt
+            cargo-audit.json
+            cargo-audit.txt
+
+      - name: Порог SCA (уязвимости в зависимостях)
+        if: steps.pip_audit.outcome == 'failure' || steps.cargo_audit.outcome == 'failure'
+        run: |
+          echo "Найдены уязвимые зависимости, см. артефакт sca-reports"
+          exit 1

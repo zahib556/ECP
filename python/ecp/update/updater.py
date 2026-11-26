@@ -10,7 +10,7 @@ import hmac
 import json
 import platform
 import shutil
-import subprocess
+import subprocess  # nosec B404 - subprocess is used only with a list of args built by the program
 import sys
 import tempfile
 from dataclasses import dataclass
@@ -208,7 +208,7 @@ class Updater:
         flags = ({"creationflags": 0x00000008 | 0x00000200} if sys.platform.startswith("win")
                  else {"start_new_session": True})
         try:
-            subprocess.Popen(args, close_fds=True, **flags)
+            subprocess.Popen(args, close_fds=True, **flags)  # nosec B603 - installer command is built by the program, no shell
         except OSError as e:
             raise self._fail(UpdateError(f"Ошибка: не удалось запустить установщик: {e.strerror or e}"),
                              prepared.manifest.version) from None

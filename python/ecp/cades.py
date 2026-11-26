@@ -217,7 +217,8 @@ def verify_cades(
         cert = None
     if not check("Сертификат подписанта найден в контейнере", cert is not None):
         return result
-    assert cert is not None
+    if cert is None:  # unreachable: checked above; explicit check instead of assert
+        return result
     result.signer = cert.subject_cn
     result.public_key = cert.public_key
 

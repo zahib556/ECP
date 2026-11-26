@@ -4,7 +4,6 @@ __pycache__/
 *.pyd
 *.egg-info/
 dev_keys/
-*.pdb
 
 # обновление ПО
 dev_keys/
@@ -27,3 +26,18 @@ fuzz/crashes/
 crash-*
 hang-*
 *.pyc
+
+# анализ безопасности (ПЗ-7): отчёты, окружение аудита, кэш баз уязвимостей
+security-reports/
+.venv-audit/
+rt/
+requirements-runtime.txt
+bandit.json
+bandit.txt
+semgrep.json
+semgrep.txt
+pip-audit.json
+pip-audit.txt
+cargo-audit.json
+cargo-audit.txt
+.semgrep/

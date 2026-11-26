@@ -11,7 +11,7 @@ import argparse
 import json
 import os
 import shutil
-import subprocess
+import subprocess  # nosec B404 - subprocess is used only with a list of args built by the program
 import sys
 import time
 from dataclasses import dataclass
@@ -79,7 +79,7 @@ def command_health_check(command: List[str], cwd: Optional[Path] = None, timeout
     """Проверка запуска: команда должна завершиться с кодом 0 (например, «--check» новой версии)."""
     def check(app: Path) -> bool:
         try:
-            done = subprocess.run(command, cwd=str(cwd or app.parent), timeout=timeout,
+            done = subprocess.run(command, cwd=str(cwd or app.parent), timeout=timeout,  # nosec B603 - command is built by the program, no shell, no user string
                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except (OSError, subprocess.SubprocessError):
             return False
@@ -136,7 +136,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         write_result(result, outcome.status, a.__dict__["from"], a.to, outcome.error)
     if launch:  # запускаем приложение в любом случае: новая версия, предыдущая после отката или прежняя
         try:
-            subprocess.Popen(launch, close_fds=True, **(
+            subprocess.Popen(launch, close_fds=True, **(  # nosec B603 - launch command is built by the program, no shell
                 {"creationflags": 0x00000008 | 0x00000200} if sys.platform.startswith("win")
                 else {"start_new_session": True}))
         except OSError:
